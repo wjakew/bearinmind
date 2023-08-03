@@ -11,10 +11,16 @@ import com.mongodb.*;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import org.bson.BsonDocument;
 import org.bson.BsonInt64;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
 
 /**
  * Object for connecting to database
@@ -28,6 +34,8 @@ public class Database_Connector {
 
     MongoClient mongoClient;
 
+    ArrayList<String> error_collection;
+
 
 
     /**
@@ -36,6 +44,7 @@ public class Database_Connector {
     public Database_Connector(){
         this.database_url = "";
         connected = false;
+        error_collection = new ArrayList<>();
     }
 
     public void setDatabase_url(String database_url){
@@ -63,7 +72,21 @@ public class Database_Connector {
             connected = true;
         }catch(MongoException ex){
             // catch error
+            log("DB-CONNECTION-ERROR", "Failed to connect to database ("+ex.toString()+")");
             connected = false;
+        }
+    }
+
+    /**
+     * Function for story log data
+     * @param log_category
+     * @param log_text
+     */
+    public void log(String log_category, String log_text){
+        error_collection.add(log_category+"("+ LocalDateTime.now(ZoneId.of("Europe/Warsaw")).toString()+") - "+log_text);
+        if ( log_category.contains("FAILED") || log_category.contains("ERROR")){
+            Notification noti = Notification.show(log_text);
+            noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 

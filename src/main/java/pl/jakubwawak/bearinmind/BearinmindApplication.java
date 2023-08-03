@@ -18,8 +18,10 @@ import pl.jakubwawak.maintanance.ConsoleColors;
 @EnableVaadin({"pl.jakubwawak"})
 public class BearinmindApplication {
 
+	public static int test_flag = 1;
+
 	public static String version = "v0.0.1";
-	public static String build = "binmind-02082023REV0";
+	public static String build = "binmind-02082023POC";
 
 	public static Database_Connector database;
 
@@ -30,7 +32,14 @@ public class BearinmindApplication {
 	public static void main(String[] args) {
 		show_header();
 		database = new Database_Connector();
-		SpringApplication.run(BearinmindApplication.class, args);
+		if ( test_flag == 0 ){
+			SpringApplication.run(BearinmindApplication.class, args);
+		}
+		else{
+			// create tests
+			Tests test = new Tests();
+			test.run();
+		}
 	}
 
 	/**

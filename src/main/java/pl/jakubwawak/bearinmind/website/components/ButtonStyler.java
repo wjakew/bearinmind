@@ -27,7 +27,7 @@ public class ButtonStyler {
         button.setIcon(icon.create());
         button.setSizeFull();button.setWidth(width);button.setHeight(height);
         //button style
-        button.getStyle().set("background-image","linear-gradient(pink, white)");
+        button.getStyle().set("background-color","pink");
         button.getStyle().set("color","#000000");
         return button;
     }

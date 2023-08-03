@@ -26,9 +26,9 @@ public class TextFieldStyler {
         field.setPlaceholder(placeholder);
         field.setPrefixComponent(icon.create());
         field.setWidth(width);field.setHeight(height);
-
         //field.getStyle().set("background-image","linear-gradient(pink, white)");
         field.getStyle().set("color","#000000");
+        field.setMaxLength(450);
         return field;
     }
 }
