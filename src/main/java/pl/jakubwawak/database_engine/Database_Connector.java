@@ -17,6 +17,7 @@ import org.bson.BsonDocument;
 import org.bson.BsonInt64;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.hibernate.dialect.sequence.DB2zSequenceSupport;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -35,6 +36,7 @@ public class Database_Connector {
     MongoClient mongoClient;
 
     ArrayList<String> error_collection;
+
 
 
 
