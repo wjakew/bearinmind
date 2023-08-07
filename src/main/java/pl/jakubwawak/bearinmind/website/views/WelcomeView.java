@@ -25,6 +25,7 @@ import com.vaadin.flow.component.html.Image;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
 import pl.jakubwawak.bearinmind.website.components.ButtonStyler;
 import pl.jakubwawak.bearinmind.website.components.TextFieldStyler;
+import pl.jakubwawak.bearinmind.website.windows.CreateAccountWindow;
 import pl.jakubwawak.bearinmind.website.windows.LoginWindow;
 
 /**
@@ -64,7 +65,7 @@ public class WelcomeView extends VerticalLayout {
 
         login_button = new Button("",this::loginbutton_action);
         setstring_button = new Button("",this::setstringbutton_action);
-        options_button = new Button("Options",VaadinIcon.SCREWDRIVER.create());
+        options_button = new Button("Options",VaadinIcon.SCREWDRIVER.create(),this::optionsbutton_action);
 
         connectionstring_field = new TextField();
 
@@ -164,6 +165,16 @@ public class WelcomeView extends VerticalLayout {
         LoginWindow lw = new LoginWindow();
         add(lw.main_dialog);
         lw.main_dialog.open();
+    }
+
+    /**
+     * options_button action
+     * @param ex
+     */
+    private void optionsbutton_action(ClickEvent ex){
+        CreateAccountWindow caw = new CreateAccountWindow();
+        add(caw.main_dialog);
+        caw.main_dialog.open();
     }
 
 }
