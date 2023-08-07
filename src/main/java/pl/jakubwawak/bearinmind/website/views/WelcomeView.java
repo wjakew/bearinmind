@@ -7,9 +7,12 @@ package pl.jakubwawak.bearinmind.website.views;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -22,6 +25,7 @@ import com.vaadin.flow.component.html.Image;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
 import pl.jakubwawak.bearinmind.website.components.ButtonStyler;
 import pl.jakubwawak.bearinmind.website.components.TextFieldStyler;
+import pl.jakubwawak.bearinmind.website.windows.LoginWindow;
 
 /**
  * Object for showing welcome view
@@ -33,6 +37,8 @@ public class WelcomeView extends VerticalLayout {
 
     Button login_button, setstring_button;
     TextField connectionstring_field;
+
+    Button options_button;
 
 
     /**
@@ -48,6 +54,7 @@ public class WelcomeView extends VerticalLayout {
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         getStyle().set("text-align", "center");
         getStyle().set("background-image","linear-gradient(pink, white)");
+
     }
 
     /**
@@ -55,12 +62,15 @@ public class WelcomeView extends VerticalLayout {
      */
     void prepare_components(){
 
-        login_button = new Button();
+        login_button = new Button("",this::loginbutton_action);
         setstring_button = new Button("",this::setstringbutton_action);
+        options_button = new Button("Options",VaadinIcon.SCREWDRIVER.create());
+
         connectionstring_field = new TextField();
 
         login_button = new ButtonStyler().simple_button(login_button,"Login", VaadinIcon.KEY,"150px","50px");
         setstring_button = new ButtonStyler().simple_button(setstring_button,"Connect to Database!",VaadinIcon.PENCIL,"512px","75px");
+        options_button = new ButtonStyler().simple_button(options_button,"Create",VaadinIcon.PLUS,"150px","50px");
         connectionstring_field = new TextFieldStyler().simple_field(connectionstring_field,"Connection String...",VaadinIcon.PENCIL,"512px","75px");
 
     }
@@ -94,9 +104,9 @@ public class WelcomeView extends VerticalLayout {
         logo.setHeight("512px");
         logo.setWidth("512px");
 
-        add(new H6("bear_in_mind"));
         add(logo);
-        add(login_button);
+        add(new H6("bear_in_mind"));
+        add(new HorizontalLayout(login_button,options_button));
     }
 
     /**
@@ -111,8 +121,8 @@ public class WelcomeView extends VerticalLayout {
         logo.setHeight("512px");
         logo.setWidth("512px");
 
-        add(new H6("bear_in_mind"));
         add(logo);
+        add(new H6("bear_in_mind"));
 
         // insert connection string
         VerticalLayout vl = new VerticalLayout(connectionstring_field,setstring_button);
@@ -151,7 +161,9 @@ public class WelcomeView extends VerticalLayout {
      * @param ex
      */
     private void loginbutton_action(ClickEvent ex){
-
+        LoginWindow lw = new LoginWindow();
+        add(lw.main_dialog);
+        lw.main_dialog.open();
     }
 
 }

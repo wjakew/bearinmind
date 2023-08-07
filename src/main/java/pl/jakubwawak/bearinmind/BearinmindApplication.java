@@ -9,21 +9,27 @@ import com.vaadin.flow.spring.annotation.EnableVaadin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import pl.jakubwawak.database_engine.Database_Connector;
+import pl.jakubwawak.database_engine.entity.BIM_User;
 import pl.jakubwawak.maintanance.ConsoleColors;
 
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class })
 @EnableVaadin({"pl.jakubwawak"})
 public class BearinmindApplication {
 
-	public static int test_flag = 1;
+	public static int debug_flag = 1;
+
+	public static int test_flag = 0;
 
 	public static String version = "v0.0.1";
-	public static String build = "binmind-04082023POC";
+	public static String build = "binmind-07082023POC";
 
 	public static Database_Connector database;
+
+	public static BIM_User logged_user;
 
 	/**
 	 * Main application function
@@ -32,7 +38,15 @@ public class BearinmindApplication {
 	public static void main(String[] args) {
 		show_header();
 		database = new Database_Connector();
+		logged_user = null;
 		if ( test_flag == 0 ){
+
+			if ( debug_flag == 1 ){
+				String url = "mongodb+srv://kubawawak:Vigor2710Vn@jwmdbinstance.uswe95e.mongodb.net/?retryWrites=true&w=majority";
+				database.setDatabase_url(url);
+				database.connect();
+			}
+
 			SpringApplication.run(BearinmindApplication.class, args);
 		}
 		else{
