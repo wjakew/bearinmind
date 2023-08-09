@@ -10,14 +10,18 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.H6;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.server.StreamResource;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
 import pl.jakubwawak.bearinmind.website.components.TextFieldStyler;
+import pl.jakubwawak.bearinmind.website.views.WelcomeView;
+import pl.jakubwawak.maintanance.Password_Validator;
 
 
 /**
@@ -42,12 +46,12 @@ public class LoginWindow {
         main_layout = new VerticalLayout();
 
         login_field = new TextField();
-        new TextFieldStyler().simple_field(login_field,"user email", VaadinIcon.PENCIL,"200px","75px");
+        new TextFieldStyler().simple_field(login_field,"user email", VaadinIcon.PENCIL,"350px","75px");
 
         password_field = new PasswordField();
         password_field.setPrefixComponent(VaadinIcon.LOCK.create());
         password_field.setPlaceholder("password...");
-        password_field.setHeight("200px");password_field.setHeight("75px");
+        password_field.setWidth("350px");password_field.setHeight("75px");
 
         action_button = new Button("",VaadinIcon.ARROW_CIRCLE_RIGHT_O.create(),this::actionbutton_action);
         action_button.addThemeVariants(ButtonVariant.LUMO_SUCCESS,ButtonVariant.LUMO_PRIMARY);
@@ -59,6 +63,15 @@ public class LoginWindow {
      * Function for preparing window
      */
     void prepare_window(){
+        StreamResource res = new StreamResource("bearinmind_icon.png", () -> {
+            return WelcomeView.class.getClassLoader().getResourceAsStream("images/bearinmind_icon.png");
+        });
+
+        Image logo = new Image(res,"bear_in_mind logo");
+        logo.setHeight("128px");
+        logo.setWidth("128px");
+
+        main_layout.add(logo);
         main_layout.add(VaadinIcon.LOCK.create());
         main_layout.add(new H6("bear_in_mind"));
         main_layout.add(login_field);
@@ -97,11 +110,17 @@ public class LoginWindow {
             }
             else{
                 //password field is not empty - try to login!
-                BearinmindApplication.database.login_user(login_field.getValue(),password_field.getValue());
-                if ( BearinmindApplication.logged_user != null ){
-                    Notification.show("Welcome back "+BearinmindApplication.logged_user.bim_user_login+"!");
-                    // open home page
-                }
+                try{
+                    Password_Validator pv = new Password_Validator(password_field.getValue());
+                    BearinmindApplication.database.login_user(login_field.getValue(),pv.hash());
+                    if ( BearinmindApplication.logged_user != null ){
+                        Notification.show("Welcome back "+BearinmindApplication.logged_user.bim_user_login+"!");
+                        // open home page
+
+                    }else{
+                        Notification.show("Cannot find user with given credentials!");
+                    }
+                }catch(Exception e){}
             }
         }
     }

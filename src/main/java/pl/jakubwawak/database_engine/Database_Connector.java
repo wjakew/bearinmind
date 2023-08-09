@@ -42,9 +42,6 @@ public class Database_Connector {
 
     ArrayList<String> error_collection;
 
-
-
-
     /**
      * Constructor
      */
@@ -146,7 +143,7 @@ public class Database_Connector {
     public int login_user(String login, String hash_password){
         try{
             MongoCollection<Document> user_collection = get_data_collection("bim_user");
-            Document document = user_collection.find(new Document("bim_user_login",login)).first();
+            Document document = user_collection.find(new Document("bim_user_mail",login)).first();
             if (document != null){
                 BIM_User user = new BIM_User(document);
                 if ( user.bim_user_password.equals(hash_password) ){

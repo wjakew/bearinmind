@@ -5,11 +5,14 @@
  */
 package pl.jakubwawak.bearinmind.website;
 
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.Lumo;
+import pl.jakubwawak.bearinmind.BearinmindApplication;
 
 /**
  * Object for showing welcome view
@@ -44,7 +47,17 @@ public class TemplateView extends VerticalLayout {
      * Function for preparing view and components
      */
     void prepare_view(){
-        prepare_components();
+        if (BearinmindApplication.logged_user != null){
+            prepare_components();
+            // prepare window components
+
+
+        }
+        else{
+            // user not logged
+            Notification.show("User not logged!");
+            getUI().ifPresent(ui -> ui.navigate("/welcome"));
+        }
     }
 
 }

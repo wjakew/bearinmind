@@ -62,7 +62,6 @@ public class WelcomeView extends VerticalLayout {
      * Function for preparing components
      */
     void prepare_components(){
-
         login_button = new Button("",this::loginbutton_action);
         setstring_button = new Button("",this::setstringbutton_action);
         options_button = new Button("Options",VaadinIcon.SCREWDRIVER.create(),this::optionsbutton_action);
@@ -73,7 +72,6 @@ public class WelcomeView extends VerticalLayout {
         setstring_button = new ButtonStyler().simple_button(setstring_button,"Connect to Database!",VaadinIcon.PENCIL,"512px","75px");
         options_button = new ButtonStyler().simple_button(options_button,"Create",VaadinIcon.PLUS,"150px","50px");
         connectionstring_field = new TextFieldStyler().simple_field(connectionstring_field,"Connection String...",VaadinIcon.PENCIL,"512px","75px");
-
     }
 
     /**

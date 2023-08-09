@@ -25,7 +25,7 @@ public class BearinmindApplication {
 	public static int test_flag = 0;
 
 	public static String version = "v0.0.1";
-	public static String build = "binmind-07082023POC";
+	public static String build = "binmind-09082023POC";
 
 	public static Database_Connector database;
 

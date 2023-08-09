@@ -6,6 +6,7 @@
 package pl.jakubwawak.database_engine.entity;
 
 import org.bson.Document;
+import pl.jakubwawak.bearinmind.BearinmindApplication;
 
 /**
  * Collection for storing user data
@@ -38,13 +39,19 @@ public class BIM_User {
      * @param to_add
      */
     public BIM_User(Document to_add){
-        bim_user_id = to_add.getObjectId("_id").toString();
-        bim_user_name = to_add.getString("bim_user_name");
-        bim_user_surname = to_add.getString("bim_user_surname");
-        bim_user_mail = to_add.getString("bim_user_mail");
-        bim_user_password = to_add.getString("bim_user_password");
-        bim_user_login = to_add.getString("bim_user_login");
-        bim_user_sex = to_add.getInteger("bim_user_sex");
+        try{
+            bim_user_id = to_add.getObjectId("_id").toString();
+            bim_user_name = to_add.getString("bim_user_name");
+            bim_user_surname = to_add.getString("bim_user_surname");
+            bim_user_mail = to_add.getString("bim_user_mail");
+            bim_user_password = to_add.getString("bim_user_password");
+            bim_user_login = to_add.getString("bim_user_login");
+            bim_user_sex = to_add.getInteger("bim_user_sex");
+        }catch(Exception ex){
+            bim_user_sex = 0;
+            BearinmindApplication.database.log("BIM-USER-PARSE-FAILED","Failed to parse bim user data ("+ex.toString()+")");
+        }
+
     }
 
     /**
