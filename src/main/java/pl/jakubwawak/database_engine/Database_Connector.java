@@ -21,6 +21,8 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.hibernate.dialect.sequence.DB2zSequenceSupport;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
+import pl.jakubwawak.database_engine.entity.BIM_Health;
+import pl.jakubwawak.database_engine.entity.BIM_Log;
 import pl.jakubwawak.database_engine.entity.BIM_User;
 import pl.jakubwawak.maintanance.ConsoleColors;
 
@@ -75,11 +77,29 @@ public class Database_Connector {
             Document commandResult = database.runCommand(command);
             connected = true;
             mongoDatabase = mongoClient.getDatabase("db_bear_in_mind");
+            BearinmindApplication.healthConfiguration = create_health_configuration();
         }catch(MongoException ex){
             // catch error
             log("DB-CONNECTION-ERROR", "Failed to connect to database ("+ex.toString()+")");
             connected = false;
         }
+    }
+
+    /**
+     * BIM_Health
+     * @return BIM_Health
+     */
+    BIM_Health create_health_configuration(){
+        BIM_Health bim_health = new BIM_Health();
+        MongoCollection<Document> health_collection = get_data_collection("bim_health");
+        if ( health_collection.countDocuments() == 0){
+            health_collection.insertOne(bim_health.prepareDocument());
+        }
+        Document document = health_collection.find().first();
+        String adm_password = document.getString("bim_administrator");
+        if ( adm_password != null )
+            log("HEALTH-CONFIGURATION","Loaded configuration, adm password: "+adm_password);
+        return new BIM_Health(document);
     }
 
     /**
@@ -105,6 +125,22 @@ public class Database_Connector {
         }catch(Exception ex){
             log("DB-INSERT-USER-FAILED","Failed to insert user ("+ex.toString()+")");
             return 0;
+        }
+    }
+
+    /**
+     * Function for inserting log
+     * @param log_to_add
+     * @return Integer
+     */
+    int insert_log(BIM_Log log_to_add){
+        try{
+            MongoCollection<Document> log_collection = get_data_collection("bim_log");
+            log_collection.insertOne(log_to_add.prepareDocument());
+            return 1;
+        }catch(Exception ex){
+            System.out.println(ex.toString());
+            return -1;
         }
     }
 
@@ -149,6 +185,7 @@ public class Database_Connector {
                 if ( user.bim_user_password.equals(hash_password) ){
                     // login successfull
                     BearinmindApplication.logged_user = user;
+                    log("DB-LOGIN-USER","Logged new user to the instance ("+login+")");
                     return 1;
                 }
                 else{
@@ -171,15 +208,32 @@ public class Database_Connector {
      */
     public void log(String log_category, String log_text){
         error_collection.add(log_category+"("+ LocalDateTime.now(ZoneId.of("Europe/Warsaw")).toString()+") - "+log_text);
+        BIM_Log log_obj = new BIM_Log();
+        log_obj.log_code = log_category;
+        log_obj.log_desc =log_text;
         if ( log_category.contains("FAILED") || log_category.contains("ERROR")){
             System.out.println(ConsoleColors.RED_BRIGHT+log_category+"["+ LocalDateTime.now(ZoneId.of("Europe/Warsaw")).toString()+") - "+log_text+"]"+ConsoleColors.RESET);
             try{
                 Notification noti = Notification.show(log_text);
                 noti.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                log_obj.std_category = "ERR";
             }catch(Exception ex){}
         }
         else{
             System.out.println(ConsoleColors.GREEN_BRIGHT+log_category+"["+ LocalDateTime.now(ZoneId.of("Europe/Warsaw")).toString()+") - "+log_text+"]"+ConsoleColors.RESET);
+            log_obj.std_category = "NRL";
+        }
+        if ( BearinmindApplication.logged_user != null ){
+            log_obj.log_user_login = BearinmindApplication.logged_user.bim_user_mail;
+        }
+        else{
+            log_obj.log_user_login = "none";
+        }
+        if ( BearinmindApplication.log_database_flag == 1){
+            // create log entry on database
+            if(BearinmindApplication.database.connected){
+                BearinmindApplication.database.insert_log(log_obj);
+            }
         }
     }
 }

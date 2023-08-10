@@ -112,15 +112,17 @@ public class LoginWindow {
                 //password field is not empty - try to login!
                 try{
                     Password_Validator pv = new Password_Validator(password_field.getValue());
-                    BearinmindApplication.database.login_user(login_field.getValue(),pv.hash());
-                    if ( BearinmindApplication.logged_user != null ){
+                    int ans = BearinmindApplication.database.login_user(login_field.getValue(),pv.hash());
+                    if ( ans == 1 ){
                         Notification.show("Welcome back "+BearinmindApplication.logged_user.bim_user_login+"!");
                         // open home page
-
-                    }else{
-                        Notification.show("Cannot find user with given credentials!");
+                        action_button.getUI().ifPresent(ui ->
+                                ui.navigate("/home"));
                     }
-                }catch(Exception e){}
+                    else{
+                        Notification.show("Cannot find user with given credentials! code("+ans+")");
+                    }
+                }catch(Exception e){System.out.println(e.toString());}
             }
         }
     }

@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import pl.jakubwawak.database_engine.Database_Connector;
+import pl.jakubwawak.database_engine.entity.BIM_Health;
 import pl.jakubwawak.database_engine.entity.BIM_User;
 import pl.jakubwawak.maintanance.ConsoleColors;
 
@@ -20,14 +21,16 @@ import pl.jakubwawak.maintanance.ConsoleColors;
 @EnableVaadin({"pl.jakubwawak"})
 public class BearinmindApplication {
 
-	public static int debug_flag = 1;
-
-	public static int test_flag = 0;
+	public static int debug_flag = 1;       // set automatic connection to test database - dev setting only
+	public static int test_flag = 0;        // flag enables testing
+	public static int log_database_flag = 0;// flag for setting if log is storing on database
 
 	public static String version = "v0.0.1";
-	public static String build = "binmind-09082023POC";
+	public static String build = "binmind-10082023POC";
 
 	public static Database_Connector database;
+
+	public static BIM_Health healthConfiguration;
 
 	public static BIM_User logged_user;
 
@@ -38,6 +41,7 @@ public class BearinmindApplication {
 	public static void main(String[] args) {
 		show_header();
 		database = new Database_Connector();
+		healthConfiguration = null;
 		logged_user = null;
 		if ( test_flag == 0 ){
 
@@ -46,7 +50,6 @@ public class BearinmindApplication {
 				database.setDatabase_url(url);
 				database.connect();
 			}
-
 			SpringApplication.run(BearinmindApplication.class, args);
 		}
 		else{
