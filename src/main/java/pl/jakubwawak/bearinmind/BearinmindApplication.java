@@ -22,11 +22,11 @@ import pl.jakubwawak.maintanance.ConsoleColors;
 public class BearinmindApplication {
 
 	public static int debug_flag = 1;       // set automatic connection to test database - dev setting only
-	public static int test_flag = 0;        // flag enables testing
+	public static int test_flag = 1;        // flag enables testing
 	public static int log_database_flag = 0;// flag for setting if log is storing on database
 
 	public static String version = "v0.0.1";
-	public static String build = "binmind-10082023POC";
+	public static String build = "binmind-11082023POC";
 
 	public static Database_Connector database;
 

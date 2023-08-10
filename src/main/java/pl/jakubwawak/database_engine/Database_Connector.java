@@ -12,6 +12,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import org.atmosphere.interceptor.AtmosphereResourceStateRecovery;
@@ -19,6 +20,7 @@ import org.bson.BsonDocument;
 import org.bson.BsonInt64;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.hibernate.dialect.sequence.DB2zSequenceSupport;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
 import pl.jakubwawak.database_engine.entity.BIM_Health;
@@ -161,6 +163,28 @@ public class Database_Connector {
             return null;
         }catch(Exception ex){
             log("DB-GETUSER-FAILED","Failed to get user data ("+ex.toString()+")");
+            return null;
+        }
+    }
+
+    /**
+     * Function for loading user from database using _id
+     * @param _id
+     * @return BIM_User
+     */
+    public BIM_User get_user_byid(String _id){
+        try{
+            MongoCollection<Document> user_collection = get_data_collection("bim_user");
+            Bson filter = Filters.eq("_id", new ObjectId(_id));
+            Document document =user_collection.find(filter).first();
+            if ( document != null ){
+                log("DB-GETUSER-ID","Found user _id: "+_id);
+                return new BIM_User(document);
+            }
+            log("DB-GETUSER-ID","Cannot find user with id: "+_id);
+            return null;
+        }catch(Exception ex){
+            log("DB-GETUSER-ID-FAILED","Failed to get user data ("+ex.toString()+")");
             return null;
         }
     }

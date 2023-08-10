@@ -6,6 +6,7 @@
 package pl.jakubwawak.database_engine.entity;
 
 import org.bson.Document;
+import pl.jakubwawak.bearinmind.BearinmindApplication;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +20,8 @@ public class BIM_DailyEntry {
     public ArrayList<String> entry_food;
     public ArrayList<String> entry_water;
 
+    public String bim_user_id;
+
     public String entry_dailygoal;
     public String entry_dailymeds;
     public String entry_diary;
@@ -27,6 +30,7 @@ public class BIM_DailyEntry {
      * Constructor
      */
     public BIM_DailyEntry(){
+        bim_user_id = BearinmindApplication.logged_user.bim_user_id;
         entry_day = new Date().toString();
         entry_quoteoftheday = "";
         entry_emotionlvl = "";
@@ -49,8 +53,9 @@ public class BIM_DailyEntry {
     Document prepareWaterDocument(){
         Document entry_water_document = new Document();
         for(String food : entry_water){
-            
+            entry_water_document.append(Integer.toString(entry_water.indexOf(food)),food);
         }
+        return entry_water_document;
     }
 
     /**
@@ -63,6 +68,10 @@ public class BIM_DailyEntry {
         bim_dailyentry_document.append("entry_quoteoftheday",entry_quoteoftheday);
         bim_dailyentry_document.append("entry_emotionlvl",entry_emotionlvl);
         bim_dailyentry_document.append("entry_food",prepareFoodDocument());
-
+        bim_dailyentry_document.append("entry_water",prepareWaterDocument());
+        bim_dailyentry_document.append("entry_dailygoal",entry_dailygoal);
+        bim_dailyentry_document.append("entry_dailymeds",entry_dailymeds);
+        bim_dailyentry_document.append("entry_diary",entry_diary);
+        return bim_dailyentry_document;
     }
 }

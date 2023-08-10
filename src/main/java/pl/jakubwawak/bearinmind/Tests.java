@@ -35,6 +35,8 @@ public class Tests {
 //        BearinmindApplication.database.insert_user(add);
 
         BIM_User search = BearinmindApplication.database.get_user("test@gmail.com");
-        System.out.println(search.bim_user_login);
+        System.out.println(search.bim_user_id);
+        BIM_User search2 = BearinmindApplication.database.get_user_byid(search.bim_user_id);
+        System.out.println(search2.bim_user_mail);
     }
 }
