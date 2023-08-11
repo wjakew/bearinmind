@@ -80,12 +80,15 @@ public class BIM_Health {
         bim_health_document.append("bim_startuptime",bim_startuptime);
         bim_health_document.append("bim_administrator",bim_administrator);
         bim_health_document.append("bim_feature1",bim_feature1);
-        bim_health_document.append("bim_feature2",bim_feature1);
-        bim_health_document.append("bim_feature3",bim_feature1);
-        bim_health_document.append("bim_feature4",bim_feature1);
-        bim_health_document.append("bim_feature5",bim_feature1);
+        bim_health_document.append("bim_feature2",bim_feature2);
+        bim_health_document.append("bim_feature3",bim_feature3);
+        bim_health_document.append("bim_feature4",bim_feature4);
+        bim_health_document.append("bim_feature5",bim_feature5);
         return bim_health_document;
     }
 
-    public String getBim_feature1(){return bim_feature1;}
+    public String getBim_feature1(){
+        BearinmindApplication.database.log("GET-BIM-F1","Loaded value: "+bim_feature1);
+        return bim_feature1;
+    }
 }

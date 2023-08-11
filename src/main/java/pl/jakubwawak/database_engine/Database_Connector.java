@@ -8,10 +8,7 @@ package pl.jakubwawak.database_engine;
 import com.mongodb.*;
 
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -23,6 +20,7 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.hibernate.dialect.sequence.DB2zSequenceSupport;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
+import pl.jakubwawak.database_engine.entity.BIM_DailyEntry;
 import pl.jakubwawak.database_engine.entity.BIM_Health;
 import pl.jakubwawak.database_engine.entity.BIM_Log;
 import pl.jakubwawak.database_engine.entity.BIM_User;
@@ -31,6 +29,7 @@ import pl.jakubwawak.maintanance.ConsoleColors;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Object for connecting to database
@@ -190,6 +189,34 @@ public class Database_Connector {
     }
 
     /**
+     * Function for loading user daily entry data
+     * @return BIM_DailyEntry
+     */
+    public BIM_DailyEntry get_user_dailyentry(){
+        try{
+            MongoCollection<Document> dailyentry_collection = get_data_collection("bim_dailyentry");
+            BIM_DailyEntry dailyEntry = new BIM_DailyEntry();
+            FindIterable<Document> daily_entry_collection =dailyentry_collection.find(new Document("bim_user_hash",BearinmindApplication.logged_user.hash));
+            if ( daily_entry_collection != null ){
+                for(Document document : daily_entry_collection){
+                    if (document.getString("entry_day").equals(dailyEntry.entry_day)){
+                        log("DB-GETDE","Found daily entry for user _id: "+BearinmindApplication.logged_user.bim_user_id+ "("+document.getObjectId("_id").toString()+")");
+                        return new BIM_DailyEntry(document);
+                    }
+                }
+            }
+            log("DB-GETDE","Cannot find daily entry with user id: "+BearinmindApplication.logged_user.bim_user_id);
+            BIM_DailyEntry user_daily_entry = new BIM_DailyEntry();
+            dailyentry_collection.insertOne(user_daily_entry.prepareDocument());
+            log("DB-GETDE","Created new daily entry for user: "+BearinmindApplication.logged_user.bim_user_id);
+            return user_daily_entry;
+        }catch(Exception ex){
+            log("DB-GETDE-FAILED","Failed to get user daily entry data ("+ex.toString()+")");
+            return null;
+        }
+    }
+
+    /**
      * User login to the app
      * @param login
      * @param hash_password
@@ -209,7 +236,7 @@ public class Database_Connector {
                 if ( user.bim_user_password.equals(hash_password) ){
                     // login successfull
                     BearinmindApplication.logged_user = user;
-                    log("DB-LOGIN-USER","Logged new user to the instance ("+login+")");
+                    log("DB-LOGIN-USER","Logged new user to the instance ("+login+"/"+BearinmindApplication.logged_user.hash+")");
                     return 1;
                 }
                 else{

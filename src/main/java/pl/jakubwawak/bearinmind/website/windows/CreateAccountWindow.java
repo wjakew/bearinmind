@@ -117,7 +117,6 @@ public class CreateAccountWindow {
                             if ( add.bim_user_mail.contains("@") ){
                                 Password_Validator pv = new Password_Validator(password.getValue());
                                 add.bim_user_password = pv.hash();
-                                add.bim_user_sex = 0;
                                 add.bim_user_name = firstName.getValue();
                                 add.bim_user_surname = lastName.getValue();
                                 add.bim_user_login=username.getValue().split("@")[0];

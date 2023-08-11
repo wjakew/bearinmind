@@ -107,7 +107,10 @@ public class WelcomeView extends VerticalLayout {
         add(new H6("bear_in_mind"));
         add(new HorizontalLayout(login_button,options_button));
 
-        if (BearinmindApplication.healthConfiguration.getBim_feature1().contains("On")){
+        if (BearinmindApplication.healthConfiguration.getBim_feature1().equals("createUserOn")){
+            options_button.setVisible(true);
+        }
+        else{
             options_button.setVisible(false);
         }
     }

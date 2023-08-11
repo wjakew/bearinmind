@@ -5,6 +5,7 @@
  */
 package pl.jakubwawak.bearinmind;
 
+import pl.jakubwawak.database_engine.entity.BIM_DailyEntry;
 import pl.jakubwawak.database_engine.entity.BIM_User;
 
 /**
@@ -34,9 +35,10 @@ public class Tests {
 //        add.bim_user_login="t.testowy";
 //        BearinmindApplication.database.insert_user(add);
 
-        BIM_User search = BearinmindApplication.database.get_user("test@gmail.com");
-        System.out.println(search.bim_user_id);
-        BIM_User search2 = BearinmindApplication.database.get_user_byid(search.bim_user_id);
+        BIM_User search2 = BearinmindApplication.database.get_user("a.testowa@gmail.com");
         System.out.println(search2.bim_user_mail);
+        BearinmindApplication.logged_user = search2;
+        BIM_DailyEntry bde= BearinmindApplication.database.get_user_dailyentry();
+        System.out.println(bde.entry_day);
     }
 }

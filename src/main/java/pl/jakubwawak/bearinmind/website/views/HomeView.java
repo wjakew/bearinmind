@@ -20,6 +20,7 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.Lumo;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
 import pl.jakubwawak.bearinmind.website.components.ButtonStyler;
+import pl.jakubwawak.database_engine.entity.BIM_DailyEntry;
 import pl.jakubwawak.maintanance.WelcomeMessages;
 
 /**
@@ -31,6 +32,8 @@ public class HomeView extends VerticalLayout {
 
     Button options_button;
     H3 progress_label;
+
+    BIM_DailyEntry daily_entry;
 
     /**
      * Constructor
@@ -86,6 +89,12 @@ public class HomeView extends VerticalLayout {
             header.setMargin(true);
             header.setAlignItems(Alignment.CENTER);
             add(header);
+
+            // prepare daily entry
+            daily_entry = BearinmindApplication.database.get_user_dailyentry();
+            if (daily_entry != null){
+                Notification.show("Loaded daily entry ("+daily_entry.dailyentry_id+")");
+            }
 
         }
         else{
