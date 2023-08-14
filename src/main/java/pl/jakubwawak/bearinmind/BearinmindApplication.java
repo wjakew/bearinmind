@@ -27,7 +27,7 @@ public class BearinmindApplication {
 	public static int log_database_flag = 0;// flag for setting if log is storing on database
 
 	public static String version = "v0.0.1";
-	public static String build = "binmind-14082023POC";
+	public static String build = "binmind-15082023POC";
 
 	public static Database_Connector database;
 
