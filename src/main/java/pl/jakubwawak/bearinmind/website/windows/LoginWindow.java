@@ -54,7 +54,8 @@ public class LoginWindow {
         password_field.setWidth("350px");password_field.setHeight("75px");
 
         action_button = new Button("",VaadinIcon.ARROW_CIRCLE_RIGHT_O.create(),this::actionbutton_action);
-        action_button.addThemeVariants(ButtonVariant.LUMO_SUCCESS,ButtonVariant.LUMO_PRIMARY);
+        action_button.getStyle().set("background-color","pink");
+        action_button.getStyle().set("color","#FFFFFF");
 
         prepare_window();
     }
@@ -84,6 +85,9 @@ public class LoginWindow {
         main_layout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         main_layout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
         main_layout.getStyle().set("text-align", "center");
+
+        main_layout.getStyle().set("border-radius","25px");
+        main_layout.getStyle().set("background-color","pink");
 
         main_dialog.add(main_layout);
     }

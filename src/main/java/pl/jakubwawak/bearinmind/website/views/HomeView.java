@@ -7,6 +7,7 @@ package pl.jakubwawak.bearinmind.website.views;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -20,6 +21,7 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.Lumo;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
 import pl.jakubwawak.bearinmind.website.components.ButtonStyler;
+import pl.jakubwawak.bearinmind.website.components.DailyEntryComposer;
 import pl.jakubwawak.database_engine.entity.BIM_DailyEntry;
 import pl.jakubwawak.maintanance.WelcomeMessages;
 
@@ -46,7 +48,7 @@ public class HomeView extends VerticalLayout {
         setJustifyContentMode(JustifyContentMode.CENTER);
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         getStyle().set("text-align", "center");
-        getStyle().set("background-image","linear-gradient(pink, white)");
+        getStyle().set("background-image","linear-gradient(#FFC0CB, #FFD4C0)");
     }
 
     /**
@@ -95,7 +97,8 @@ public class HomeView extends VerticalLayout {
             if (daily_entry != null){
                 Notification.show("Loaded daily entry ("+daily_entry.dailyentry_id+")");
             }
-
+            DailyEntryComposer dec = new DailyEntryComposer(daily_entry);
+            add(dec.main_dailyentry_layout);
         }
         else{
             // user not logged

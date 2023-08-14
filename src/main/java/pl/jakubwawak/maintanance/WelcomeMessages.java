@@ -11,7 +11,7 @@ public class WelcomeMessages {
      */
     public WelcomeMessages(){
         welcomeCollection = new ArrayList<>();
-        welcomeCollection.add("Have splendid day X");
+        welcomeCollection.add("Have a splendid day X");
         welcomeCollection.add("Have a good one X");
         welcomeCollection.add("Have a wonderful day X");
         welcomeCollection.add("Take care X");
@@ -24,7 +24,7 @@ public class WelcomeMessages {
      * @return String
      */
     public String getWelcomeMessage(String login){
-        int index = (int)(Math.random() * ((welcomeCollection.size()) + 1));
+        int index = (int)(Math.random() * ((welcomeCollection.size())));
         return welcomeCollection.get(index).replace("X",login);
     }
 }

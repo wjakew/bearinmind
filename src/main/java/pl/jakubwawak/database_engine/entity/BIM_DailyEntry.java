@@ -81,6 +81,7 @@ public class BIM_DailyEntry {
         bim_dailyentry_document.append("entry_dailygoal",entry_dailygoal);
         bim_dailyentry_document.append("entry_dailymeds",entry_dailymeds);
         bim_dailyentry_document.append("entry_diary",entry_diary);
+        bim_dailyentry_document.append("entry_fearlvl",entry_fearlvl);
         return bim_dailyentry_document;
     }
 }
