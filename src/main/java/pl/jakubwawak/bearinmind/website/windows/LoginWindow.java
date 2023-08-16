@@ -88,6 +88,7 @@ public class LoginWindow {
 
         main_layout.getStyle().set("border-radius","25px");
         main_layout.getStyle().set("background-color","pink");
+        main_layout.getStyle().set("--lumo-font-family","Monospace");
 
         main_dialog.add(main_layout);
     }

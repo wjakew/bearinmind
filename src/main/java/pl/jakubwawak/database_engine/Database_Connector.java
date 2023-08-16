@@ -10,6 +10,9 @@ import com.mongodb.*;
 
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import org.atmosphere.interceptor.AtmosphereResourceStateRecovery;
@@ -213,6 +216,45 @@ public class Database_Connector {
         }catch(Exception ex){
             log("DB-GETDE-FAILED","Failed to get user daily entry data ("+ex.toString()+")");
             return null;
+        }
+    }
+
+    /**
+     * Function for updating daily entry
+     * @param to_update
+     * @return Integer
+     */
+    public int updateDailyEntry(BIM_DailyEntry to_update){
+        try{
+            MongoCollection<Document> bim_collection = get_data_collection("bim_dailyentry");
+            FindIterable<Document> user_dailyentries = bim_collection.find(new Document("bim_user_hash",to_update.bim_user_hash));
+            // find document on database
+            Document document = null;
+            for(Document dailyEntry : user_dailyentries){
+                if ( dailyEntry.getString("entry_day").equals(to_update.entry_day)){
+                    document = dailyEntry;
+                    break;
+                }
+            }
+
+            if ( document != null ){
+                Bson updates = Updates.combine(
+                        Updates.set("entry_quoteoftheday", to_update.entry_quoteoftheday),
+                        Updates.set("entry_emotionlvl", to_update.entry_emotionlvl),
+                        Updates.set("entry_fearlvl", to_update.entry_fearlvl),
+                        Updates.set("entry_dailygoal", to_update.entry_dailygoal),
+                        Updates.set("entry_diary", to_update.entry_diary),
+                        Updates.set("entry_food", to_update.entry_food),
+                        Updates.set("entry_water", to_update.entry_water)
+                );
+                UpdateResult result = bim_collection.updateOne(document, updates);
+                log("DB-BIM-UPDATE","Modified document ("+to_update.dailyentry_id+") count "+result.getModifiedCount());
+                return 1;
+            }
+            return 0;
+        }catch(Exception ex){
+            log("DB-BIM-UPDATE-FAILED","Failed to update bim ("+ex.toString()+")");
+            return -1;
         }
     }
 

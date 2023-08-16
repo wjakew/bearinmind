@@ -65,6 +65,7 @@ public class CreateAccountWindow {
         // Stretch the username field over 2 columns
         formLayout.setColspan(username, 2);
         main_layout = formLayout;
+        main_layout.getStyle().set("--lumo-font-family","Monospace");
         main_dialog.add(new H1("Create Account"));
         main_dialog.add(main_layout);
         main_dialog.add(create_button);

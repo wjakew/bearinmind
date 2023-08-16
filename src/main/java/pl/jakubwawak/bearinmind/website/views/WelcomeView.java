@@ -55,6 +55,7 @@ public class WelcomeView extends VerticalLayout {
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         getStyle().set("text-align", "center");
         getStyle().set("background-image","linear-gradient(pink, white)");
+        getStyle().set("--lumo-font-family","Monospace");
 
     }
 
@@ -135,7 +136,7 @@ public class WelcomeView extends VerticalLayout {
         vl.setJustifyContentMode(JustifyContentMode.CENTER);
         vl.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         vl.getStyle().set("text-align", "center");
-
+        vl.getStyle().set("--lumo-font-family","Monospace");
         add(vl);
     }
 

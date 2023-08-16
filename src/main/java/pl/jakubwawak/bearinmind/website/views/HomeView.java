@@ -5,6 +5,7 @@
  */
 package pl.jakubwawak.bearinmind.website.views;
 
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
@@ -22,6 +23,7 @@ import com.vaadin.flow.theme.lumo.Lumo;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
 import pl.jakubwawak.bearinmind.website.components.ButtonStyler;
 import pl.jakubwawak.bearinmind.website.components.DailyEntryComposer;
+import pl.jakubwawak.bearinmind.website.windows.OptionsWindow;
 import pl.jakubwawak.database_engine.entity.BIM_DailyEntry;
 import pl.jakubwawak.maintanance.WelcomeMessages;
 
@@ -37,6 +39,10 @@ public class HomeView extends VerticalLayout {
 
     BIM_DailyEntry daily_entry;
 
+    Button reload_button;
+
+    DailyEntryComposer dec;
+
     /**
      * Constructor
      */
@@ -49,15 +55,20 @@ public class HomeView extends VerticalLayout {
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         getStyle().set("text-align", "center");
         getStyle().set("background-image","linear-gradient(#FFC0CB, #FFD4C0)");
+        getStyle().set("--lumo-font-family","Monospace");
     }
 
     /**
      * Function for preparing components
      */
     void prepare_components(){
-        options_button = new Button();
+        options_button = new Button("",this::optionsbutton_action);
         options_button = new ButtonStyler().simple_button(options_button,"Options", VaadinIcon.ARCHIVE,"125px","50px");
         progress_label = new H3("0%");
+
+        reload_button = new Button("",this::reloadbutton_action);
+        new ButtonStyler().simple_button(reload_button,"no_data", VaadinIcon.CALENDAR,"25%","15%");
+
     }
 
     /**
@@ -97,7 +108,10 @@ public class HomeView extends VerticalLayout {
             if (daily_entry != null){
                 Notification.show("Loaded daily entry ("+daily_entry.dailyentry_id+")");
             }
-            DailyEntryComposer dec = new DailyEntryComposer(daily_entry);
+            dec = new DailyEntryComposer(daily_entry);
+            reload_button.setText(daily_entry.entry_day);
+
+            add(reload_button);
             add(dec.main_dailyentry_layout);
         }
         else{
@@ -105,6 +119,24 @@ public class HomeView extends VerticalLayout {
             Notification.show("User not logged!");
             getUI().ifPresent(ui -> ui.navigate("/welcome"));
         }
+    }
+
+    /**
+     * options_button action function
+     * @param e
+     */
+    private void optionsbutton_action(ClickEvent e){
+        OptionsWindow ow = new OptionsWindow();
+        add(ow.main_dialog);
+        ow.main_dialog.open();
+    }
+
+    /**
+     * reload_button action function
+     * @param e
+     */
+    private void reloadbutton_action(ClickEvent e){
+        dec.prepareDataOutput();
     }
 
 }

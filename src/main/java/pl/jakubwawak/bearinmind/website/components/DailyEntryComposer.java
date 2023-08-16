@@ -5,11 +5,19 @@
  */
 package pl.jakubwawak.bearinmind.website.components;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
+import org.springframework.security.core.parameters.P;
+import pl.jakubwawak.bearinmind.BearinmindApplication;
+import pl.jakubwawak.bearinmind.website.components.bim_components.FoodEntryWindow;
+import pl.jakubwawak.bearinmind.website.components.bim_components.TodaysGoalWindow;
 import pl.jakubwawak.database_engine.entity.BIM_DailyEntry;
 
 /**
@@ -50,13 +58,13 @@ public class DailyEntryComposer {
         emotionlvl_button = new Button();
         emotionlvl_button.setText("emotion_lvl");
 
-        foodentry_button = new Button();
+        foodentry_button = new Button("",this::foodentrybutton_action);
         foodentry_button.setText("Food");
 
         waterentry_button = new Button();
         waterentry_button.setText("Water");
 
-        dailygoal_button = new Button();
+        dailygoal_button = new Button("",this::dailygoalbutton_action);
         dailygoal_button.setText("daily_goal");
 
         dailymends_button = new Button();
@@ -64,6 +72,7 @@ public class DailyEntryComposer {
 
         dailyentry_area = new TextArea();
         dailyentry_area.setPlaceholder("What's on your mind today?");
+
     }
 
     /**
@@ -124,8 +133,6 @@ public class DailyEntryComposer {
         left_layout.add(entry_quoteoftheday,foodwater_layout,dailygoal_button,dailymends_button);
         right_layout.add(emotionlvl_button,fearlvl_button,dailyentry_area);
 
-
-
         left_layout.setSizeFull();
         left_layout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         left_layout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
@@ -137,7 +144,7 @@ public class DailyEntryComposer {
         right_layout.getStyle().set("text-align", "center");
 
         main_dailyentry_layout.add(left_layout,right_layout);
-        //main_dailyentry_layout.setSizeFull();
+
         main_dailyentry_layout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         main_dailyentry_layout.setWidth("80%");
         main_dailyentry_layout.setHeight("50%");
@@ -146,12 +153,25 @@ public class DailyEntryComposer {
         main_dailyentry_layout.getStyle().set("margin","75px");
         main_dailyentry_layout.getStyle().set("background-color","#7E8D85");
         main_dailyentry_layout.getStyle().set("--lumo-font-family","Monospace");
+
+        // action listeners
+        entry_quoteoftheday.addKeyPressListener(Key.ENTER, e ->
+        {
+            dailyEntry.entry_quoteoftheday = entry_quoteoftheday.getValue();
+            Notification.show(entry_quoteoftheday.getValue());
+            updateDatabase();
+        });
+        dailyentry_area.addKeyPressListener(Key.ENTER, e ->
+        {
+            dailyEntry.entry_diary = dailyentry_area.getValue();
+            updateDatabase();
+        });
     }
 
     /**
      * Function for preparing data visualisation
      */
-    void prepareDataOutput(){
+    public void prepareDataOutput(){
         entry_quoteoftheday.setValue(dailyEntry.entry_quoteoftheday);
         dailyentry_area.setValue(dailyEntry.entry_diary);
 
@@ -172,7 +192,7 @@ public class DailyEntryComposer {
         }
 
         if (!dailyEntry.entry_dailygoal.equals("")){
-            dailygoal_button.setText(dailyEntry.entry_dailygoal);
+            dailygoal_button.setText("Daily goal: " + dailyEntry.entry_dailygoal);
             dailygoal_button.setEnabled(false);
         }
         else{
@@ -180,5 +200,44 @@ public class DailyEntryComposer {
         }
 
         dailymends_button.setText("Daily Meds");
+    }
+
+    /**
+     * Function for updating object
+     */
+    public void updateDatabase(){
+        int ans = BearinmindApplication.database.updateDailyEntry(dailyEntry);
+        switch(ans){
+            case 1:
+            {
+                Notification.show("Updated values on ("+dailyEntry.dailyentry_id);
+                break;
+            }
+            case 0:
+            {
+                Notification.show("Cannot find daily entry! code : 0");
+                break;
+            }
+            default:
+            {
+                Notification.show("Application error, see log.");
+                break;
+            }
+        }
+    }
+
+
+    // -- button actions
+    private void dailygoalbutton_action(ClickEvent ex){
+        TodaysGoalWindow tgw = new TodaysGoalWindow(this.dailyEntry);
+        main_dailyentry_layout.add(tgw.main_dialog);
+        tgw.main_dialog.open();
+        prepareDataOutput();
+    }
+    private void foodentrybutton_action(ClickEvent ex){
+        FoodEntryWindow few = new FoodEntryWindow(this.dailyEntry);
+        main_dailyentry_layout.add(few.main_dialog);
+        few.main_dialog.open();
+        prepareDataOutput();
     }
 }
