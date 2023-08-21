@@ -23,7 +23,7 @@ public class BIM_DailyEntry {
     public String entry_emotionlvl;
     public String entry_fearlvl;
     public ArrayList<String> entry_food;
-    public ArrayList<String> entry_water;
+    public int entry_water;
 
     public String bim_user_hash;
 
@@ -42,7 +42,7 @@ public class BIM_DailyEntry {
         entry_emotionlvl = "";
         entry_fearlvl = "";
         entry_food = new ArrayList<>();
-        entry_water = new ArrayList<>();
+        entry_water = 0;
         entry_dailygoal = "";
         entry_dailymeds = "";
         entry_diary = "";
@@ -60,7 +60,7 @@ public class BIM_DailyEntry {
         entry_emotionlvl = to_add.getString("entry_emotionlvl");
         entry_fearlvl = to_add.getString("entry_fearlvl");
         entry_food = (ArrayList<String>) to_add.getList("entry_food",String.class);
-        entry_water = (ArrayList<String>) to_add.getList("entry_water",String.class);
+        entry_water = to_add.getInteger("entry_water");
         entry_dailygoal = to_add.getString("entry_dailygoal");;
         entry_dailymeds = to_add.getString("entry_dailymeds");;
         entry_diary = to_add.getString("entry_diary");;

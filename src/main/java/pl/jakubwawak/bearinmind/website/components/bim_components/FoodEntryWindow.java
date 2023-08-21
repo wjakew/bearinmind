@@ -5,11 +5,18 @@
  */
 package pl.jakubwawak.bearinmind.website.components.bim_components;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H6;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import pl.jakubwawak.bearinmind.BearinmindApplication;
 import pl.jakubwawak.database_engine.entity.BIM_DailyEntry;
 import pl.jakubwawak.maintanance.GridElement;
 
@@ -28,6 +35,9 @@ public class FoodEntryWindow {
     Grid<GridElement> grid;
     ArrayList<GridElement> content;
 
+    TextField foodName_field, foodkcal_field;
+    Button add_button;
+
     /**
      * Constructor
      */
@@ -37,7 +47,6 @@ public class FoodEntryWindow {
         main_layout = new VerticalLayout();
 
         main_dialog.setModal(true);
-        main_dialog.setResizable(true);
 
         prepare_window();
     }
@@ -55,8 +64,21 @@ public class FoodEntryWindow {
         grid.setItems(content);
 
         grid.getStyle().set("border-radius","25px");
-        grid.getStyle().set("background-color","pink");
-        grid.setSizeFull(); grid.setWidth("250px"); grid.setHeight("100px");
+        grid.setWidth("500px"); grid.setHeight("400px");
+
+        foodName_field = new TextField();
+        foodName_field.setPlaceholder("Food Name");
+        foodName_field.setPrefixComponent(VaadinIcon.COFFEE.create());
+        foodName_field.setWidth("50%");
+
+        foodkcal_field = new TextField();
+        foodkcal_field.setPlaceholder("kcal");
+        foodkcal_field.setPrefixComponent(VaadinIcon.CALC.create());
+        foodkcal_field.setWidth("30%");
+
+        add_button = new Button("",VaadinIcon.PLUS.create(),this::addbutton_action);
+        add_button.setWidth("20%");
+        add_button.addThemeVariants(ButtonVariant.LUMO_SUCCESS,ButtonVariant.LUMO_PRIMARY);
 
     }
 
@@ -68,9 +90,13 @@ public class FoodEntryWindow {
         prepare_components();
 
         // creating layout
+        HorizontalLayout hl_buttons =new HorizontalLayout();
+        hl_buttons.add(foodName_field,foodkcal_field,add_button);
+        //hl_buttons.setSizeFull();
 
         // -- here add your layout
         main_layout.add(new H6("What did you eat today?"));
+        main_layout.add(hl_buttons);
         main_layout.add(grid);
 
 
@@ -86,5 +112,23 @@ public class FoodEntryWindow {
 
         // adding layout to window
         main_dialog.add(main_layout);
+    }
+
+    /**
+     * add_button action
+     * @param ex
+     */
+    private void addbutton_action(ClickEvent ex){
+        if ( !foodName_field.getValue().equals("")&&!foodkcal_field.getValue().equals("")){
+            // add record
+            dailyEntry.entry_food.add(foodName_field.getValue()+"("+foodkcal_field.getValue()+"kcal)");
+        }
+        content.clear();
+        for(String food_entry : dailyEntry.entry_food){
+            content.add(new GridElement(food_entry));
+        }
+        grid.getDataProvider().refreshAll();
+        BearinmindApplication.database.updateDailyEntry(this.dailyEntry);
+        foodName_field.setValue(""); foodkcal_field.setValue("");
     }
 }

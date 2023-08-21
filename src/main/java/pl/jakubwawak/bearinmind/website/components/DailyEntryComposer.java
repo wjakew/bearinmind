@@ -18,6 +18,7 @@ import org.springframework.security.core.parameters.P;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
 import pl.jakubwawak.bearinmind.website.components.bim_components.FoodEntryWindow;
 import pl.jakubwawak.bearinmind.website.components.bim_components.TodaysGoalWindow;
+import pl.jakubwawak.bearinmind.website.components.bim_components.WaterEntryWindow;
 import pl.jakubwawak.database_engine.entity.BIM_DailyEntry;
 
 /**
@@ -61,7 +62,7 @@ public class DailyEntryComposer {
         foodentry_button = new Button("",this::foodentrybutton_action);
         foodentry_button.setText("Food");
 
-        waterentry_button = new Button();
+        waterentry_button = new Button("",this::waterentrybutton_action);
         waterentry_button.setText("Water");
 
         dailygoal_button = new Button("",this::dailygoalbutton_action);
@@ -155,13 +156,12 @@ public class DailyEntryComposer {
         main_dailyentry_layout.getStyle().set("--lumo-font-family","Monospace");
 
         // action listeners
-        entry_quoteoftheday.addKeyPressListener(Key.ENTER, e ->
+        entry_quoteoftheday.addBlurListener(e ->
         {
             dailyEntry.entry_quoteoftheday = entry_quoteoftheday.getValue();
-            Notification.show(entry_quoteoftheday.getValue());
             updateDatabase();
         });
-        dailyentry_area.addKeyPressListener(Key.ENTER, e ->
+        dailyentry_area.addBlurListener(e ->
         {
             dailyEntry.entry_diary = dailyentry_area.getValue();
             updateDatabase();
@@ -210,7 +210,7 @@ public class DailyEntryComposer {
         switch(ans){
             case 1:
             {
-                Notification.show("Updated values on ("+dailyEntry.dailyentry_id);
+                Notification.show("Updated values on ("+dailyEntry.dailyentry_id+")");
                 break;
             }
             case 0:
@@ -238,6 +238,12 @@ public class DailyEntryComposer {
         FoodEntryWindow few = new FoodEntryWindow(this.dailyEntry);
         main_dailyentry_layout.add(few.main_dialog);
         few.main_dialog.open();
+        prepareDataOutput();
+    }
+    private void waterentrybutton_action(ClickEvent ex){
+        WaterEntryWindow wew = new WaterEntryWindow(this.dailyEntry);
+        main_dailyentry_layout.add(wew.main_dialog);
+        wew.main_dialog.open();
         prepareDataOutput();
     }
 }

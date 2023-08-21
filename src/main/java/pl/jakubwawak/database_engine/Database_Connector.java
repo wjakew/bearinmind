@@ -249,6 +249,10 @@ public class Database_Connector {
                 );
                 UpdateResult result = bim_collection.updateOne(document, updates);
                 log("DB-BIM-UPDATE","Modified document ("+to_update.dailyentry_id+") count "+result.getModifiedCount());
+                try{
+                    Notification noti = Notification.show("Updated Daily Entry object!\nModified document ("+to_update.dailyentry_id+") count "+result.getModifiedCount());
+                    noti.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                }catch(Exception ex){}
                 return 1;
             }
             return 0;
