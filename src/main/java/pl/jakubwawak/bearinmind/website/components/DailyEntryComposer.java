@@ -16,9 +16,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import org.springframework.security.core.parameters.P;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
-import pl.jakubwawak.bearinmind.website.components.bim_components.FoodEntryWindow;
-import pl.jakubwawak.bearinmind.website.components.bim_components.TodaysGoalWindow;
-import pl.jakubwawak.bearinmind.website.components.bim_components.WaterEntryWindow;
+import pl.jakubwawak.bearinmind.website.components.bim_components.*;
 import pl.jakubwawak.database_engine.entity.BIM_DailyEntry;
 
 /**
@@ -53,10 +51,10 @@ public class DailyEntryComposer {
         entry_quoteoftheday = new TextArea();
         entry_quoteoftheday.setPlaceholder("Quote of the Day");
 
-        fearlvl_button = new Button();
+        fearlvl_button = new Button("",this::fearlvlbutton_action);
         fearlvl_button.setText("fear_lvl");
 
-        emotionlvl_button = new Button();
+        emotionlvl_button = new Button("",this::emotionlvlbutton_action);
         emotionlvl_button.setText("emotion_lvl");
 
         foodentry_button = new Button("",this::foodentrybutton_action);
@@ -73,7 +71,6 @@ public class DailyEntryComposer {
 
         dailyentry_area = new TextArea();
         dailyentry_area.setPlaceholder("What's on your mind today?");
-
     }
 
     /**
@@ -107,9 +104,11 @@ public class DailyEntryComposer {
         //right side
         emotionlvl_button.getStyle().set("background-color","#87B38D");
         emotionlvl_button.getStyle().set("color","#FFFFFF");
+        emotionlvl_button.getStyle().set("word-wrap","break-word");
 
         fearlvl_button.getStyle().set("background-color","#B5EAD7");
-        fearlvl_button.getStyle().set("color","#000000");
+        fearlvl_button.getStyle().set("color","#FFFFFF");
+        fearlvl_button.getStyle().set("word-wrap","break-word");
     }
 
     /**
@@ -175,7 +174,7 @@ public class DailyEntryComposer {
         entry_quoteoftheday.setValue(dailyEntry.entry_quoteoftheday);
         dailyentry_area.setValue(dailyEntry.entry_diary);
 
-        if ( !dailyEntry.entry_fearlvl.equals("") ){
+        if ( !dailyEntry.entry_emotionlvl.equals("") ){
             emotionlvl_button.setText(dailyEntry.entry_emotionlvl);
             emotionlvl_button.setEnabled(false);
         }
@@ -183,13 +182,7 @@ public class DailyEntryComposer {
             emotionlvl_button.setText("How do you feel today?");
         }
 
-        if ( !dailyEntry.entry_fearlvl.equals("") ){
-            fearlvl_button.setText(dailyEntry.entry_fearlvl);
-            fearlvl_button.setEnabled(false);
-        }
-        else{
-            fearlvl_button.setText("How much did you stress?");
-        }
+        fearlvl_button.setText("How much did you stress today?");
 
         if (!dailyEntry.entry_dailygoal.equals("")){
             dailygoal_button.setText("Daily goal: " + dailyEntry.entry_dailygoal);
@@ -198,7 +191,6 @@ public class DailyEntryComposer {
         else{
             dailygoal_button.setText("Set Today's Goal");
         }
-
         dailymends_button.setText("Daily Meds");
     }
 
@@ -244,6 +236,18 @@ public class DailyEntryComposer {
         WaterEntryWindow wew = new WaterEntryWindow(this.dailyEntry);
         main_dailyentry_layout.add(wew.main_dialog);
         wew.main_dialog.open();
+        prepareDataOutput();
+    }
+    private void emotionlvlbutton_action(ClickEvent ex){
+        FeelingsEntryWindow few = new FeelingsEntryWindow(this.dailyEntry);
+        main_dailyentry_layout.add(few.main_dialog);
+        few.main_dialog.open();
+        prepareDataOutput();
+    }
+    private void fearlvlbutton_action(ClickEvent ex){
+        StressEntryWindow sew = new StressEntryWindow(this.dailyEntry);
+        main_dailyentry_layout.add(sew.main_dialog);
+        sew.main_dialog.open();
         prepareDataOutput();
     }
 }

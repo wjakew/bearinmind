@@ -35,19 +35,22 @@ import pl.jakubwawak.maintanance.WelcomeMessages;
 public class HomeView extends VerticalLayout {
 
     Button options_button;
-    H3 progress_label;
+    public H3 progress_label;
 
     BIM_DailyEntry daily_entry;
 
     Button reload_button;
 
     DailyEntryComposer dec;
+    String percentValue;
 
     /**
      * Constructor
      */
     public HomeView(){
+        BearinmindApplication.currentLayout = this;
         this.getElement().setAttribute("theme", Lumo.DARK);
+        percentValue = "0%";
         prepare_view();
 
         setSizeFull();
@@ -64,11 +67,11 @@ public class HomeView extends VerticalLayout {
     void prepare_components(){
         options_button = new Button("",this::optionsbutton_action);
         options_button = new ButtonStyler().simple_button(options_button,"Options", VaadinIcon.ARCHIVE,"125px","50px");
-        progress_label = new H3("0%");
+        progress_label = new H3(percentValue);
 
         reload_button = new Button("",this::reloadbutton_action);
         new ButtonStyler().simple_button(reload_button,"no_data", VaadinIcon.CALENDAR,"25%","15%");
-
+        progress_label.getStyle().set("color","#87B38D");
     }
 
     /**
@@ -110,6 +113,8 @@ public class HomeView extends VerticalLayout {
             }
             dec = new DailyEntryComposer(daily_entry);
             reload_button.setText(daily_entry.entry_day);
+
+            BearinmindApplication.currentLayout.progress_label.setText(daily_entry.calculatePercent() +"%");
 
             add(reload_button);
             add(dec.main_dailyentry_layout);

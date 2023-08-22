@@ -6,6 +6,7 @@
 package pl.jakubwawak.bearinmind.website.windows;
 
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -91,6 +92,14 @@ public class LoginWindow {
         main_layout.getStyle().set("--lumo-font-family","Monospace");
 
         main_dialog.add(main_layout);
+
+        login_field.addKeyPressListener(Key.ENTER, e->{
+            keyboard_action_login();
+        });
+
+        password_field.addKeyPressListener(Key.ENTER, e->{
+            keyboard_action_login();
+        });
     }
 
     /**
@@ -98,6 +107,44 @@ public class LoginWindow {
      * @param ex
      */
     private void actionbutton_action(ClickEvent ex){
+        if ( action_button.getText().equals("") ){
+            if ( !login_field.getValue().equals("") ){
+                password_field.setVisible(true);
+                action_button.setText("Login");
+            }
+            else{
+                Notification.show("Login field is empty!");
+            }
+        }
+        else {
+            if (password_field.getValue().equals("")){
+                //password field is empty
+                password_field.setVisible(false);
+                action_button.setText("");
+            }
+            else{
+                //password field is not empty - try to login!
+                try{
+                    Password_Validator pv = new Password_Validator(password_field.getValue());
+                    int ans = BearinmindApplication.database.login_user(login_field.getValue(),pv.hash());
+                    if ( ans == 1 ){
+                        Notification.show("Welcome back "+BearinmindApplication.logged_user.bim_user_login+"!");
+                        // open home page
+                        action_button.getUI().ifPresent(ui ->
+                                ui.navigate("/home"));
+                    }
+                    else{
+                        Notification.show("Cannot find user with given credentials! code("+ans+")");
+                    }
+                }catch(Exception e){System.out.println(e.toString());}
+            }
+        }
+    }
+
+    /**
+     * Function for triggering when enter is pressed
+     */
+    private void keyboard_action_login(){
         if ( action_button.getText().equals("") ){
             if ( !login_field.getValue().equals("") ){
                 password_field.setVisible(true);

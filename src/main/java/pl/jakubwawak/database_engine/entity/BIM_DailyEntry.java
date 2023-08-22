@@ -84,4 +84,37 @@ public class BIM_DailyEntry {
         bim_dailyentry_document.append("entry_fearlvl",entry_fearlvl);
         return bim_dailyentry_document;
     }
+
+    /**
+     * Function for calculating moodtracker daily filling
+     * @return Integer
+     */
+    public double calculatePercent(){
+        double percent = 0.0;
+        if (!entry_quoteoftheday.isEmpty()){
+            percent+=12.5;
+        }
+        if (!entry_emotionlvl.isEmpty()){
+            percent+=12.5;
+        }
+        if (!entry_dailygoal.isEmpty()){
+            percent+=12.5;
+        }
+        if (!entry_diary.isEmpty()){
+            percent+=12.5;
+        }
+        if (!entry_fearlvl.isEmpty()){
+            percent+=12.5;
+        }
+        if (!entry_food.isEmpty()){
+            percent+=12.5;
+        }
+        if (!entry_dailymeds.isEmpty()){
+            percent+=12.5;
+        }
+        if (entry_water > 0){
+            percent+=12.5;
+        }
+        return percent;
+    }
 }

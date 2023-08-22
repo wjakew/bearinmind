@@ -77,6 +77,7 @@ public class OptionsWindow {
 
         // adding layout to window
         main_dialog.add(main_layout);
+        main_dialog.setWidth("400px");main_dialog.setHeight("400px");
     }
 
     /**

@@ -6,6 +6,7 @@
 package pl.jakubwawak.bearinmind;
 
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.spring.annotation.EnableVaadin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import pl.jakubwawak.bearinmind.website.views.HomeView;
 import pl.jakubwawak.database_engine.Database_Connector;
 import pl.jakubwawak.database_engine.entity.BIM_Health;
 import pl.jakubwawak.database_engine.entity.BIM_User;
@@ -27,13 +29,14 @@ public class BearinmindApplication {
 	public static int log_database_flag = 0;// flag for setting if log is storing on database
 
 	public static String version = "v0.0.1";
-	public static String build = "binmind-21082023POC";
+	public static String build = "binmind-22082023POC";
 
 	public static Database_Connector database;
 
 	public static BIM_Health healthConfiguration;
 
 	public static BIM_User logged_user;
+	public static HomeView currentLayout;
 
 	/**
 	 * Main application function
@@ -44,6 +47,7 @@ public class BearinmindApplication {
 		database = new Database_Connector();
 		healthConfiguration = null;
 		logged_user = null;
+		currentLayout = null;
 		if ( test_flag == 0 ){
 
 			if ( debug_flag == 1 ){
