@@ -70,7 +70,10 @@ public class HomeView extends VerticalLayout {
         progress_label = new H3(percentValue);
 
         reload_button = new Button("",this::reloadbutton_action);
-        new ButtonStyler().simple_button(reload_button,"no_data", VaadinIcon.CALENDAR,"25%","15%");
+        new ButtonStyler().third_button(reload_button,"no_data", VaadinIcon.CALENDAR,"80%","15%");
+        reload_button.getStyle().set("font-size","100px");
+        reload_button.getStyle().set("color","#FFFFFF");
+        reload_button.getStyle().set("background-color","#7E8D85");
         progress_label.getStyle().set("color","#87B38D");
     }
 

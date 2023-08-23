@@ -66,7 +66,7 @@ public class DailyEntryComposer {
         dailygoal_button = new Button("",this::dailygoalbutton_action);
         dailygoal_button.setText("daily_goal");
 
-        dailymends_button = new Button();
+        dailymends_button = new Button("",this::dailymendsbutton_action);
         dailymends_button.setText("daily_meds");
 
         dailyentry_area = new TextArea();
@@ -248,6 +248,12 @@ public class DailyEntryComposer {
         StressEntryWindow sew = new StressEntryWindow(this.dailyEntry);
         main_dailyentry_layout.add(sew.main_dialog);
         sew.main_dialog.open();
+        prepareDataOutput();
+    }
+    private void dailymendsbutton_action(ClickEvent ex){
+        MedsEntryWindow mew = new MedsEntryWindow(this.dailyEntry);
+        main_dailyentry_layout.add(mew.main_dialog);
+        mew.main_dialog.open();
         prepareDataOutput();
     }
 }

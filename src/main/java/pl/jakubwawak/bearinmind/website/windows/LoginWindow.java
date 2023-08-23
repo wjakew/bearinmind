@@ -7,9 +7,11 @@ package pl.jakubwawak.bearinmind.website.windows;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -74,8 +76,8 @@ public class LoginWindow {
         logo.setWidth("128px");
 
         main_layout.add(logo);
-        main_layout.add(VaadinIcon.LOCK.create());
-        main_layout.add(new H6("bear_in_mind"));
+        H6 nameheader = new H6("by Jakub Wawak");
+        main_layout.add(nameheader);
         main_layout.add(login_field);
         main_layout.add(password_field);
         main_layout.add(action_button);

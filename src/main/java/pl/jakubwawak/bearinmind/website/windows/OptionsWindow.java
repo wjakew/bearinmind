@@ -16,6 +16,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
 import pl.jakubwawak.bearinmind.website.components.ButtonStyler;
+import pl.jakubwawak.bearinmind.website.components.bim_components.ViewerWindow;
 
 /**
  * Object for showing window components
@@ -25,6 +26,7 @@ public class OptionsWindow {
     public Dialog main_dialog;
     VerticalLayout main_layout;
 
+    Button viewer_button;
     Button adminpanel_button;
     Button logout_button;
 
@@ -41,12 +43,14 @@ public class OptionsWindow {
      * Function for preparing components
      */
     void prepare_components(){
-        logout_button= new Button("Logout", VaadinIcon.EXIT.create(),this::logoutbutton_action);
-        logout_button.setWidth("100%"); logout_button.setHeight("20%");
-        logout_button.addThemeVariants(ButtonVariant.LUMO_ERROR,ButtonVariant.LUMO_PRIMARY);
+        logout_button= new Button("",this::logoutbutton_action);
+        logout_button  = new ButtonStyler().third_button(logout_button,"Logout",VaadinIcon.EXIT,"100%","20%");
 
         adminpanel_button = new Button("Admin Panel",VaadinIcon.LOCK.create());
-        adminpanel_button = new ButtonStyler().secondary_button(adminpanel_button,"Admin Panel",VaadinIcon.LOCK,"100%","20%");
+        adminpanel_button = new ButtonStyler().third_button(adminpanel_button,"Admin Panel",VaadinIcon.LOCK,"100%","20%");
+
+        viewer_button = new Button("Mental Viewer",VaadinIcon.LOCK.create(),this::viewerbutton_action);
+        viewer_button = new ButtonStyler().third_button(viewer_button,"Your Emotion History",VaadinIcon.MAGIC,"100%","20%");
 
     }
 
@@ -62,6 +66,7 @@ public class OptionsWindow {
             // -- here add your layout
 
         main_layout.add(new H6("Options"));
+        main_layout.add(viewer_button);
         main_layout.add(adminpanel_button);
         main_layout.add(logout_button);
 
@@ -78,6 +83,13 @@ public class OptionsWindow {
         // adding layout to window
         main_dialog.add(main_layout);
         main_dialog.setWidth("400px");main_dialog.setHeight("400px");
+    }
+
+    private void viewerbutton_action(ClickEvent e){
+        ViewerWindow vw = new ViewerWindow();
+        main_layout.add(vw.main_dialog);
+        vw.main_dialog.open();;
+        main_dialog.close();
     }
 
     /**

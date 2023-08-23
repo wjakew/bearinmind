@@ -220,6 +220,26 @@ public class Database_Connector {
     }
 
     /**
+     * Function for loading dailyentries
+     * @return ArrayList
+     */
+    public ArrayList<BIM_DailyEntry> get_user_dailyentries(){
+        ArrayList<BIM_DailyEntry> data = new ArrayList<>();
+        try{
+            MongoCollection<Document> dailyentry_collection = get_data_collection("bim_dailyentry");
+            BIM_DailyEntry dailyEntry = new BIM_DailyEntry();
+            FindIterable<Document> daily_entry_collection =dailyentry_collection.find(new Document("bim_user_hash",BearinmindApplication.logged_user.hash)).sort(new Document("_id",-1)).limit(10);
+            for (Document document : daily_entry_collection) {
+                data.add(new BIM_DailyEntry(document));
+            }
+            log("DB-GETDE-COLLECTION", "Loaded "+data.size()+" user documents!");
+        }catch(Exception ex){
+            log("DB-GETDE-COLLECTION-FAILED", "Failed to load user documents ("+ex.toString()+")");
+        }
+        return  data;
+    }
+
+    /**
      * Function for updating daily entry
      * @param to_update
      * @return Integer

@@ -5,39 +5,35 @@
  */
 package pl.jakubwawak.bearinmind.website.components.bim_components;
 
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.H6;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.tabs.TabSheet;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
-import pl.jakubwawak.bearinmind.website.components.ButtonStyler;
+import pl.jakubwawak.bearinmind.website.components.DailyEntryViewer;
 import pl.jakubwawak.database_engine.entity.BIM_DailyEntry;
 
+import java.util.ArrayList;
+
 /**
- * Object for adding today's goal
+ * Object for creating viewer
  */
-public class TodaysGoalWindow {
+public class ViewerWindow {
 
     public Dialog main_dialog;
     VerticalLayout main_layout;
 
-    TextField todaysgoal_field;
-    Button set_button;
+    ArrayList<BIM_DailyEntry> dailyEntries;
 
-    BIM_DailyEntry dailyEntry;
+    TabSheet tabSheet;
 
     /**
      * Constructor
      */
-    public TodaysGoalWindow(BIM_DailyEntry dailyEntry){
-        this.dailyEntry = dailyEntry;
+    public ViewerWindow(){
         main_dialog = new Dialog();
         main_layout = new VerticalLayout();
-        main_dialog.setModal(true);
+        dailyEntries = BearinmindApplication.database.get_user_dailyentries();
         prepare_window();
     }
 
@@ -45,13 +41,12 @@ public class TodaysGoalWindow {
      * Function for preparing components
      */
     void prepare_components(){
-        todaysgoal_field = new TextField();
-        todaysgoal_field.setPlaceholder("?");
-        todaysgoal_field.setPrefixComponent(VaadinIcon.STAR.create());
-        todaysgoal_field.setWidth("100%");
-
-        set_button = new Button("",this::setbutton_action);
-        new ButtonStyler().secondary_button(set_button,"Set Goal",VaadinIcon.STAR,"100%","20%");
+        tabSheet = new TabSheet();
+        for(BIM_DailyEntry dailyEntry : dailyEntries){
+            DailyEntryViewer dev = new DailyEntryViewer(dailyEntry);
+            tabSheet.add(dailyEntry.entry_day,dev.main_layout);
+        }
+        tabSheet.setSizeFull();
     }
 
     /**
@@ -64,9 +59,7 @@ public class TodaysGoalWindow {
         // creating layout
 
         // -- here add your layout
-        main_layout.add(new H6("what do you want to achieve today?"));
-        main_layout.add(todaysgoal_field);
-        main_layout.add(set_button);
+        main_layout.add(tabSheet);
 
         // styling window
         main_layout.setSizeFull();
@@ -76,15 +69,9 @@ public class TodaysGoalWindow {
 
         main_layout.getStyle().set("border-radius","25px");
         main_layout.getStyle().set("background-color","pink");
-
+        main_layout.getStyle().set("--lumo-font-family","Monospace");
         // adding layout to window
         main_dialog.add(main_layout);
-        main_dialog.setWidth("400px");main_dialog.setHeight("400px");
-    }
-
-    private void setbutton_action(ClickEvent ex){
-        dailyEntry.entry_dailygoal = todaysgoal_field.getValue();
-        BearinmindApplication.database.updateDailyEntry(dailyEntry);
-        main_dialog.close();
+        main_dialog.setWidth("80%");main_dialog.setHeight("80%");
     }
 }
