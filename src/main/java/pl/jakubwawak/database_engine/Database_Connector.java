@@ -9,6 +9,7 @@ import com.mongodb.*;
 
 
 import com.mongodb.client.*;
+import com.mongodb.client.model.CountOptions;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
@@ -28,6 +29,7 @@ import pl.jakubwawak.database_engine.entity.BIM_Health;
 import pl.jakubwawak.database_engine.entity.BIM_Log;
 import pl.jakubwawak.database_engine.entity.BIM_User;
 import pl.jakubwawak.maintanance.ConsoleColors;
+import pl.jakubwawak.maintanance.GridElement;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -220,6 +222,40 @@ public class Database_Connector {
     }
 
     /**
+     * Function for counting user daily entries
+     * @return Long
+     */
+    public long count_user_dailyentries(){
+        try{
+            MongoCollection<Document> dailyentry_collection = get_data_collection("bim_dailyentry");
+            CountOptions opts = new CountOptions().hintString("_id_");
+            return dailyentry_collection.countDocuments(new BsonDocument(), opts);
+        }catch(Exception ex){
+            log("DB-DE-COUNT","Failed to count daily entries ("+ex.toString()+")");
+            return -1;
+        }
+    }
+
+    /**
+     * Function for loading list of users
+     * @return ArrayList
+     */
+    public ArrayList<GridElement> get_user_list(){
+        ArrayList<GridElement> data = new ArrayList<>();
+        try{
+            MongoCollection<Document> dailyentry_collection = get_data_collection("bim_user");
+            FindIterable<Document> daily_entry_collection =dailyentry_collection.find();
+            for(Document user_document : daily_entry_collection){
+                data.add(new GridElement(user_document.getString("bim_user_mail"),0,user_document.getObjectId("_id").toString()));
+            }
+            log("DB-LIST-USER","Loaded "+data.size()+" users from database");
+        }catch(Exception ex){
+            log("DB-LIST-USER-FAILED","Failed to list users ("+ex.toString()+")");
+        }
+        return data;
+    }
+
+    /**
      * Function for loading dailyentries
      * @return ArrayList
      */
@@ -265,7 +301,8 @@ public class Database_Connector {
                         Updates.set("entry_dailygoal", to_update.entry_dailygoal),
                         Updates.set("entry_diary", to_update.entry_diary),
                         Updates.set("entry_food", to_update.entry_food),
-                        Updates.set("entry_water", to_update.entry_water)
+                        Updates.set("entry_water", to_update.entry_water),
+                        Updates.set("entry_dailymeds",to_update.entry_dailymeds)
                 );
                 UpdateResult result = bim_collection.updateOne(document, updates);
                 log("DB-BIM-UPDATE","Modified document ("+to_update.dailyentry_id+") count "+result.getModifiedCount());

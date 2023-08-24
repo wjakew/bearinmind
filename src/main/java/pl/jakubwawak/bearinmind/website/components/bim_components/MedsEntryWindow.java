@@ -100,6 +100,7 @@ public class MedsEntryWindow {
             medicine = medicine + name_field.getValue()+"("+amount_field.getValue()+"),";
             dailyEntry.entry_dailymeds = medicine;
             BearinmindApplication.database.updateDailyEntry(dailyEntry);
+            main_dialog.close();
         }
         else{
             Notification.show("Empty user enter");

@@ -46,7 +46,7 @@ public class OptionsWindow {
         logout_button= new Button("",this::logoutbutton_action);
         logout_button  = new ButtonStyler().third_button(logout_button,"Logout",VaadinIcon.EXIT,"100%","20%");
 
-        adminpanel_button = new Button("Admin Panel",VaadinIcon.LOCK.create());
+        adminpanel_button = new Button("Admin Panel",VaadinIcon.LOCK.create(),this::adminpanelbutton_action);
         adminpanel_button = new ButtonStyler().third_button(adminpanel_button,"Admin Panel",VaadinIcon.LOCK,"100%","20%");
 
         viewer_button = new Button("Mental Viewer",VaadinIcon.LOCK.create(),this::viewerbutton_action);
@@ -85,11 +85,20 @@ public class OptionsWindow {
         main_dialog.setWidth("400px");main_dialog.setHeight("400px");
     }
 
+    /**
+     * viewer_button action
+     * @param e
+     */
     private void viewerbutton_action(ClickEvent e){
-        ViewerWindow vw = new ViewerWindow();
-        main_layout.add(vw.main_dialog);
-        vw.main_dialog.open();;
-        main_dialog.close();
+        if ( BearinmindApplication.database.count_user_dailyentries() > 0 ){
+            ViewerWindow vw = new ViewerWindow();
+            main_layout.add(vw.main_dialog);
+            vw.main_dialog.open();;
+            main_dialog.close();
+        }
+        else{
+            Notification.show("No emotion entries! Check back tomorrow!");
+        }
     }
 
     /**
@@ -102,5 +111,10 @@ public class OptionsWindow {
         logout_button.getUI().ifPresent(ui ->
                 ui.navigate("/welcome"));
         Notification.show("User logged out!");
+    }
+
+    private void adminpanelbutton_action(ClickEvent e){
+        adminpanel_button.getUI().ifPresent(ui ->
+                ui.navigate("/admin-panel"));
     }
 }
