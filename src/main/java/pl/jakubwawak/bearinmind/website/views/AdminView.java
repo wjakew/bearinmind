@@ -24,6 +24,8 @@ import com.vaadin.flow.theme.lumo.Lumo;
 import org.springframework.security.core.parameters.P;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
 import pl.jakubwawak.bearinmind.website.components.ButtonStyler;
+import pl.jakubwawak.bearinmind.website.windows.CreateAccountWindow;
+import pl.jakubwawak.database_engine.entity.BIM_Health;
 import pl.jakubwawak.maintanance.GridElement;
 import pl.jakubwawak.maintanance.WelcomeMessages;
 
@@ -41,6 +43,8 @@ public class AdminView extends VerticalLayout {
     Grid<GridElement> userGrid;
     Button removeuser_button, adduser_button;
     Button disableaccount_button, generateraport_button, resetpassword_button, logviewer_button;
+
+    HorizontalLayout adminLayout;
 
     /**
      * Constructor
@@ -95,11 +99,14 @@ public class AdminView extends VerticalLayout {
         adminpassword_field.setPrefixComponent(VaadinIcon.LOCK.create());
         adminpassword_field.setWidth("25%");
 
-        unlock_button = new Button();
+        unlock_button = new Button("",this::unlockbutton_action);
         unlock_button = new ButtonStyler().simple_button(unlock_button,"Unlock",VaadinIcon.LOCK,"125px","50px");
 
-        disableaccount_button = new Button();
+        disableaccount_button = new Button("",this::disableaccountcreationbutton_action);
         disableaccount_button = new ButtonStyler().simple_button(disableaccount_button,"Disable Account Creation",VaadinIcon.STAR,"100%","50px");
+        if ( !BearinmindApplication.healthConfiguration.getBim_feature1().equals("createUserOn") ){
+            disableaccount_button.setText("Enable Account Creation");
+        }
 
         generateraport_button = new Button();
         generateraport_button = new ButtonStyler().simple_button(generateraport_button,"Generate Raport",VaadinIcon.STAR,"100%","50px");
@@ -124,7 +131,8 @@ public class AdminView extends VerticalLayout {
             passwordLayout.setAlignItems(Alignment.CENTER);
             passwordLayout.setWidth("80%");
             add(passwordLayout);
-            add(prepareAdministrationLayout());
+            adminLayout = prepareAdministrationLayout();
+            add(adminLayout);
         }
         else{
             // user not logged
@@ -145,10 +153,10 @@ public class AdminView extends VerticalLayout {
         userGrid.setItems(BearinmindApplication.database.get_user_list());
         userGrid.setWidth("100%");userGrid.setHeight("100%");
 
-        adduser_button = new Button("Add User");
-        adduser_button = new ButtonStyler().simple_button(adduser_button,"Add User",VaadinIcon.USER,"100%","50px");
+        adduser_button = new Button("Add User",this::adduserbutton_action);
+        adduser_button = new ButtonStyler().simple_button(adduser_button,"Add User",VaadinIcon.USER,"100%","100%");
 
-        removeuser_button = new Button("Remove User");
+        removeuser_button = new Button("Remove User",this::removebutton_action);
         removeuser_button = new ButtonStyler().simple_button(removeuser_button,"Remove User",VaadinIcon.USER,"100%","50px");
 
 
@@ -193,6 +201,68 @@ public class AdminView extends VerticalLayout {
     private void gobackbutton_action(ClickEvent ex){
         goback_button.getUI().ifPresent(ui ->
                 ui.navigate("/home"));
+    }
+
+    /**
+     * adduser_button action
+     * @param ex
+     */
+    private void adduserbutton_action(ClickEvent ex){
+        CreateAccountWindow caw = new CreateAccountWindow();
+        add(caw.main_dialog);
+        caw.main_dialog.open();
+    }
+
+    /**
+     * removeuser_button action
+     * @param ex
+     */
+    private void removebutton_action(ClickEvent ex){
+        for(GridElement element : userGrid.getSelectedItems()){
+            int ans = BearinmindApplication.database.remove_user(element.getGridelement_details());
+            if ( ans == 1 ){
+                Notification.show("User removed");
+            }
+            Notification.show("Failed to remove user, check log");
+        }
+    }
+
+    /**
+     * disableaccountcreation_button action
+     * @param ex
+     */
+    private void disableaccountcreationbutton_action(ClickEvent ex){
+        if ( disableaccount_button.getText().equals("Disable Account Creation")){
+            BearinmindApplication.healthConfiguration.bim_feature1 = "createUserOff";
+            disableaccount_button.setText("Enable Account Creation");
+            BearinmindApplication.database.updateHealth(BearinmindApplication.healthConfiguration);
+            Notification.show("Disabled user creation.");
+        }
+        else{
+            BearinmindApplication.healthConfiguration.bim_feature1 = "createUserOn";
+            disableaccount_button.setText("Disable Account Creation");
+            BearinmindApplication.database.updateHealth(BearinmindApplication.healthConfiguration);
+            Notification.show("Enabled user creation.");
+        }
+    }
+
+    /**
+     * unlock_button action
+     * @param ex
+     */
+    private void unlockbutton_action(ClickEvent ex){
+        if ( adminpassword_field.getValue().isEmpty() ){
+            Notification.show("Empty password field - ERROR");
+        }
+        else{
+            if ( BearinmindApplication.healthConfiguration.bim_administrator.equals(adminpassword_field.getValue())){
+                adminLayout.setEnabled(true);
+                Notification.show("Password correct.");
+            }
+            else{
+                Notification.show("Password error.");
+            }
+        }
     }
 
 }

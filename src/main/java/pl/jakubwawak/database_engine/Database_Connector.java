@@ -13,6 +13,7 @@ import com.mongodb.client.model.CountOptions;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -135,6 +136,28 @@ public class Database_Connector {
     }
 
     /**
+     * Function for removing user from database
+     * @param user_hash
+     * @return Integer
+     */
+    public int remove_user(String user_hash){
+        try{
+            MongoCollection<Document> dailyEntry_collection = get_data_collection("bim_dailyentry");
+            Bson query = Filters.eq("bim_dailyentry", user_hash);
+            DeleteResult result = dailyEntry_collection.deleteMany(query);
+            log("DB-DAILYENTRY-REMOVE","Removed "+result.getDeletedCount()+" documents from bim_dailyentry");
+            MongoCollection<Document> user_collection = get_data_collection("bim_user");
+            Bson user_query = Filters.eq("bim_user_hash",user_hash);
+            DeleteResult user_result = user_collection.deleteMany(user_query);
+            log("DB-USER-REMOVE","Removed user ("+user_hash+") from database");
+            return 1;
+        }catch(Exception ex){
+            log("DB-DAILYENTRY-REMOVE-FAILED","Failed for removing user ("+ex.toString()+")");
+            return -1;
+        }
+    }
+
+    /**
      * Function for inserting log
      * @param log_to_add
      * @return Integer
@@ -246,7 +269,7 @@ public class Database_Connector {
             MongoCollection<Document> dailyentry_collection = get_data_collection("bim_user");
             FindIterable<Document> daily_entry_collection =dailyentry_collection.find();
             for(Document user_document : daily_entry_collection){
-                data.add(new GridElement(user_document.getString("bim_user_mail"),0,user_document.getObjectId("_id").toString()));
+                data.add(new GridElement(user_document.getString("bim_user_mail"),0,user_document.getString("bim_user_hash")));
             }
             log("DB-LIST-USER","Loaded "+data.size()+" users from database");
         }catch(Exception ex){
@@ -319,6 +342,33 @@ public class Database_Connector {
             log("DB-BIM-UPDATE-FAILED","Failed to update bim ("+ex.toString()+")");
             return -1;
         }
+    }
+
+    /**
+     * Function for updating health data
+     * @param health_update
+     * @return Integer
+     */
+    public int updateHealth(BIM_Health health_update){
+        try{
+            MongoCollection<Document> bim_collection = get_data_collection("bim_health");
+            Document health_document = bim_collection.find().first();
+            Bson updates = Updates.combine(
+                    Updates.set("bim_administrator",health_update.bim_administrator),
+                    Updates.set("bim_feature1",health_update.bim_feature1),
+                    Updates.set("bim_feature2",health_update.bim_feature2),
+                    Updates.set("bim_feature3",health_update.bim_feature3),
+                    Updates.set("bim_feature4",health_update.bim_feature4),
+                    Updates.set("bim_feature5",health_update.bim_feature5)
+            );
+            UpdateResult result = bim_collection.updateOne(health_document, updates);
+            log("HEALTH-UPDATE","Modified health document, updated: "+result.getModifiedCount());
+            return 1;
+        }catch(Exception ex){
+            log("HEALTH-UPDATE-FAILED","Failed to update ("+ex.toString()+")");
+            return -1;
+        }
+
     }
 
     /**
