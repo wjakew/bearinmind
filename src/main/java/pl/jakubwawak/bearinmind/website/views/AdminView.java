@@ -24,6 +24,8 @@ import com.vaadin.flow.theme.lumo.Lumo;
 import org.springframework.security.core.parameters.P;
 import pl.jakubwawak.bearinmind.BearinmindApplication;
 import pl.jakubwawak.bearinmind.website.components.ButtonStyler;
+import pl.jakubwawak.bearinmind.website.components.bim_components.LogViewerWindow;
+import pl.jakubwawak.bearinmind.website.components.bim_components.MessageWindow;
 import pl.jakubwawak.bearinmind.website.windows.CreateAccountWindow;
 import pl.jakubwawak.database_engine.entity.BIM_Health;
 import pl.jakubwawak.maintanance.GridElement;
@@ -111,10 +113,10 @@ public class AdminView extends VerticalLayout {
         generateraport_button = new Button();
         generateraport_button = new ButtonStyler().simple_button(generateraport_button,"Generate Raport",VaadinIcon.STAR,"100%","50px");
 
-        resetpassword_button = new Button();
+        resetpassword_button = new Button("",this::resetpasswordbutton_action);
         resetpassword_button = new ButtonStyler().simple_button(resetpassword_button,"Reset Password",VaadinIcon.STAR,"100%","50px");
 
-        logviewer_button = new Button();
+        logviewer_button = new Button("",this::logviewerbutton_action);
         logviewer_button = new ButtonStyler().simple_button(logviewer_button,"Show Application Log",VaadinIcon.STAR ,"100%","50px");
 
     }
@@ -214,16 +216,47 @@ public class AdminView extends VerticalLayout {
     }
 
     /**
+     * generateraport_button action
+     * @param ex
+     */
+    private void generateraportbutton_action(ClickEvent ex){
+        Notification.show("Function not ready");
+    }
+
+    /**
      * removeuser_button action
      * @param ex
      */
     private void removebutton_action(ClickEvent ex){
         for(GridElement element : userGrid.getSelectedItems()){
-            int ans = BearinmindApplication.database.remove_user(element.getGridelement_details());
-            if ( ans == 1 ){
-                Notification.show("User removed");
+            if ( element.getGridelement_text().equals(BearinmindApplication.logged_user.bim_user_mail)){
+                Notification.show("You cannot remove your own account!");
             }
-            Notification.show("Failed to remove user, check log");
+            else{
+                int ans = BearinmindApplication.database.remove_user(element.getGridelement_details());
+                if ( ans == 1 ){
+                    Notification.show("User removed");
+                }
+                Notification.show("Failed to remove user, check log");
+            }
+        }
+    }
+
+    /**
+     * resetpassword_button action
+     * @param ex
+     */
+    private void resetpasswordbutton_action(ClickEvent ex){
+        for(GridElement element : userGrid.getSelectedItems()){
+            String newPassword = BearinmindApplication.database.reset_user_password(element.getGridelement_details());
+            if (!newPassword.isEmpty()){
+                MessageWindow mw = new MessageWindow("New Password for user is "+newPassword);
+                add(mw.main_dialog);
+                mw.main_dialog.open();
+            }
+            else{
+                Notification.show("Cannot reset user password, check application log!");
+            }
         }
     }
 
@@ -244,6 +277,16 @@ public class AdminView extends VerticalLayout {
             BearinmindApplication.database.updateHealth(BearinmindApplication.healthConfiguration);
             Notification.show("Enabled user creation.");
         }
+    }
+
+    /**
+     * logviewer_button
+     * @param ex
+     */
+    private void logviewerbutton_action(ClickEvent ex){
+        LogViewerWindow lvw = new LogViewerWindow();
+        add(lvw.main_dialog);
+        lvw.main_dialog.open();
     }
 
     /**

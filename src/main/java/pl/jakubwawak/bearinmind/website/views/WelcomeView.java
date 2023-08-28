@@ -38,7 +38,6 @@ public class WelcomeView extends VerticalLayout {
 
     Button login_button, setstring_button;
     TextField connectionstring_field;
-
     Button options_button;
 
 

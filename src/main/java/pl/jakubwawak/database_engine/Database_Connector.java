@@ -31,11 +31,13 @@ import pl.jakubwawak.database_engine.entity.BIM_Log;
 import pl.jakubwawak.database_engine.entity.BIM_User;
 import pl.jakubwawak.maintanance.ConsoleColors;
 import pl.jakubwawak.maintanance.GridElement;
+import pl.jakubwawak.maintanance.Password_Validator;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 
 /**
  * Object for connecting to database
@@ -132,6 +134,68 @@ public class Database_Connector {
         }catch(Exception ex){
             log("DB-INSERT-USER-FAILED","Failed to insert user ("+ex.toString()+")");
             return 0;
+        }
+    }
+
+    /**
+     * Function for resetting user password
+     * @param user_hash
+     * @return String
+     */
+    public String reset_user_password(String user_hash){
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 15;
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(targetStringLength);
+        for (int i = 0; i < targetStringLength; i++) {
+            int randomLimitedInt = leftLimit + (int)
+                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+            buffer.append((char) randomLimitedInt);
+        }
+        String newPassword = buffer.toString();
+        try{
+            Password_Validator pv = new Password_Validator(newPassword);
+            MongoCollection<Document> user_collection = get_data_collection("bim_user");
+            Document userDocument = user_collection.find(new Document("bim_user_hash",user_hash)).first();
+            if ( userDocument != null ) {
+                Bson updates = Updates.combine(
+                        Updates.set("bim_user_password", pv.hash())
+                );
+                UpdateResult result = user_collection.updateOne(userDocument, updates);
+                log("DB-USER-PWRESET","User password reset! User Hash ("+user_hash+")");
+                return newPassword;
+            }
+            log("DB-USER-PWRESET","Cannot find user with given hash! ("+user_hash+")");
+            return "";
+        }catch(Exception ex){
+            log("DB-USER-PASSWORD-FAILED","Failed to reset user password ("+ex.toString()+")");
+            return "";
+        }
+    }
+
+    /**
+     * Function for updating user password
+     * @param passwordHash
+     * @return Integer
+     */
+    public int updatePassword(String passwordHash){
+        try{
+            MongoCollection<Document> user_collection = get_data_collection("bim_user");
+            Document userDocument = user_collection.find(new Document("bim_user_hash",BearinmindApplication.logged_user.hash)).first();
+            if ( userDocument != null ) {
+                Bson updates = Updates.combine(
+                        Updates.set("bim_user_password", passwordHash)
+                );
+                UpdateResult result = user_collection.updateOne(userDocument, updates);
+                log("DB-USER-PWRESET","User password reset! User Hash ("+BearinmindApplication.logged_user.hash+")");
+                return 1;
+            }
+            log("DB-USER-PWRESET","Cannot find user with given hash! ("+BearinmindApplication.logged_user.hash+")");
+            return 0;
+        }catch(Exception ex){
+            log("DB-USER-PASSWORD-FAILED","Failed to reset user password ("+ex.toString()+")");
+            return -1;
         }
     }
 
@@ -299,6 +363,24 @@ public class Database_Connector {
     }
 
     /**
+     * Function for getting application log from database
+     * @return ArrayList
+     */
+    public ArrayList<GridElement> get_application_log(){
+        ArrayList<GridElement> data = new ArrayList<>();
+        try{
+            MongoCollection<Document> bim_log_collection = get_data_collection("bim_log");
+            FindIterable<Document> daily_entry_documents = bim_log_collection.find().sort(new Document("_id",-1)).limit(100);
+            for(Document document : daily_entry_documents){
+                data.add(new GridElement(document.getString("log_desc"),document.getString("log_time"),document.getString("log_code")));
+            }
+        }catch(Exception ex){
+            log("DB-GETLOG-FAILED","Failed to get application log information ("+ex.toString()+")");
+        }
+        return data;
+    }
+
+    /**
      * Function for updating daily entry
      * @param to_update
      * @return Integer
@@ -396,10 +478,12 @@ public class Database_Connector {
                 }
                 else{
                     // wrong password
+                    log("DB-LOGIN-USER-WRPASS","Wrong password for ("+login+") hash ("+hash_password+")");
                     return 0;
                 }
             }
             // cannot find user
+            log("DB-LOGIN-USER-CNFIND","Cannot find user ("+login+")");
             return -2;
         }catch(Exception ex){
             log("DB-LOGIN-USER-FAILED","Failed to login user ("+ex.toString()+")");

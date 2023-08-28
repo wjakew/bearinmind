@@ -19,13 +19,11 @@ import pl.jakubwawak.maintanance.ConsoleColors;
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class })
 @EnableVaadin({"pl.jakubwawak"})
 public class BearinmindApplication {
-
-	public static int debug_flag = 1;       // set automatic connection to test database - dev setting only
 	public static int test_flag = 0;        // flag enables testing
-	public static int log_database_flag = 0;// flag for setting if log is storing on database
+	public static int log_database_flag = 1;// flag for setting if log is storing on database
 
-	public static String version = "v0.0.1";
-	public static String build = "binmind-25082023POC";
+	public static String version = "v1.0.0";
+	public static String build = "binmind-28082023POC";
 
 	public static Database_Connector database;
 
@@ -45,12 +43,6 @@ public class BearinmindApplication {
 		logged_user = null;
 		currentLayout = null;
 		if ( test_flag == 0 ){
-
-			if ( debug_flag == 1 ){
-				String url = "mongodb+srv://kubawawak:Vigor2710Vn@jwmdbinstance.uswe95e.mongodb.net/?retryWrites=true&w=majority";
-				database.setDatabase_url(url);
-				database.connect();
-			}
 			SpringApplication.run(BearinmindApplication.class, args);
 		}
 		else{
